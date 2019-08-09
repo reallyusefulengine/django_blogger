@@ -10,7 +10,7 @@ posts = [
     },
     {
         'author': 'janedoe',
-        'title': 'Fashion blog 1',
+        'title': 'Daily blog 1',
         'content': 'Lorem epsom...',
         'date_posted': 'August 29th, 2018'
     },
