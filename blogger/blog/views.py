@@ -74,3 +74,16 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         form.instance.post_id = self.kwargs['pk']
         return super().form_valid(form)
+
+class FeedListView(ListView):
+    model = Post
+    template_name = 'blog/feed_posts.html' # <app>/<model>_<viewtype>.html
+    context_object_name = 'posts'
+    paginate_by = 6
+
+    def get_queryset(self):
+        user = request.user
+        queryset = Post.objects.filter(author__followers=user)
+        return queryset
+        # self.user = self.get_object()
+        # return Post.objects.filter(author__followers=user)
