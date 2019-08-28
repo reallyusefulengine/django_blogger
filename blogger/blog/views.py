@@ -82,7 +82,7 @@ class FeedListView(ListView):
     paginate_by = 6
 
     def get_queryset(self):
-        user = request.user
+
         queryset = Post.objects.filter(author__followers=user)
         return queryset
         # self.user = self.get_object()
