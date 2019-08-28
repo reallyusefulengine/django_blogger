@@ -5,11 +5,11 @@
       <form method="post">
         {% csrf_token %}
         <fieldset class="form-group">
-          <legend class="border-bottom mb-4">Blog Post</legend>
+          <legend class="border-bottom mb-4">Comment</legend>
           {{ form|crispy }}
         </fieldset>
         <div class="form-group">
-          <button type="submit" class="btn btn-outline-info">Post!</button>
+          <button type="submit" class="btn btn-outline-info">Add Comment!</button>
           <a href="{% url 'blog-home' %}" class="btn btn-outline-secondary">Cancel</a>
         </div>
       </form>
