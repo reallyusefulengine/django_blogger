@@ -5,6 +5,7 @@ from django.views.generic import (ListView, DetailView, CreateView,
 UpdateView, DeleteView)
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+from users.models import Profile
 
 # def home(request):
 #     context = {
@@ -75,15 +76,17 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
         form.instance.post_id = self.kwargs['pk']
         return super().form_valid(form)
 
-class FeedListView(ListView):
+class FeedListView(LoginRequiredMixin, ListView):
     model = Post
     template_name = 'blog/feed_posts.html' # <app>/<model>_<viewtype>.html
     context_object_name = 'posts'
+    ordering = ['-date_posted']
     paginate_by = 6
 
     def get_queryset(self):
+        theUser = Profile.objects.filter(user_id__exact=self.request.user.id)
+        theFollowers = theUser[0].follows.all()
+        return theFollowers
 
-        queryset = Post.objects.filter(author__followers=user)
-        return queryset
         # self.user = self.get_object()
         # return Post.objects.filter(author__followers=user)
