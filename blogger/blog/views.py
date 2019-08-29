@@ -83,10 +83,17 @@ class FeedListView(LoginRequiredMixin, ListView):
     ordering = ['-date_posted']
     paginate_by = 6
 
+
+
     def get_queryset(self):
+        follow_data = []
+        following_me_data = []
         theUser = Profile.objects.filter(user_id__exact=self.request.user.id)
         theFollowers = theUser[0].follows.all()
-        return theFollowers
+        follow_data.append(theFollowers)
+        following_me = theUser[0].followed_by.all()
+        following_me_data.append(following_me)
+        print(f'I follow: {follow_data}')
+        print(f'{following_me_data} follows me')
 
-        # self.user = self.get_object()
-        # return Post.objects.filter(author__followers=user)
+        return theFollowers
