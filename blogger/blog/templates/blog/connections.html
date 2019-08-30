@@ -2,21 +2,28 @@
 {% block content %}
     <h1 class="mb-3">Followed users: ({{ page_obj.paginator.count }})</h1>
     {% for post in posts|first %}
-
+    {% if post.0.user %}
     <article class="media content-section">
         <img class="rounded-circle article-img" src="{{ post.0.user.profile.image.url }}" alt="">
-    <a href="{% url 'user-posts' post.0.user %}">{{ post.0.user }}</a>
+        <a href="{% url 'user-posts' post.0.user %}">{{ post.0.user }}</a>
+    {% else %}
+      <p>You are not following any users</p>
+    {% endif %}
+
     </article>
     {% endfor %}
 
     <h1 class="mb-3">Users following me:</h1>
+
     {% for post in posts|last %}
-    <article class="media content-section">
-      <img class="rounded-circle article-img" src="{{ post.0.user.profile.image.url }}" alt="">
-      <a href="{% url 'user-posts' post.0.user %}">{{ post.0.user }}</a>
-    {% empty %}
-      <p>no users are folowing you</p>
-    </article>
+      {% if post.0.user %}
+        <article class="media content-section">
+        <img class="rounded-circle article-img" src="{{ post.0.user.profile.image.url }}" alt="">
+        <a href="{% url 'user-posts' post.0.user %}">{{ post.0.user }}</a>
+      {% else %}
+        <p>no users are folowing you</p>
+      {% endif %}
+      </article>
     {% endfor %}
 
 

@@ -78,7 +78,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
 class FeedListView(LoginRequiredMixin, ListView):
     model = Post
-    template_name = 'blog/feed_posts.html' # <app>/<model>_<viewtype>.html
+    template_name = 'blog/connections.html' # <app>/<model>_<viewtype>.html
     context_object_name = 'posts'
     ordering = ['-date_posted']
     paginate_by = 6
@@ -86,14 +86,14 @@ class FeedListView(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
-        follow_data = []
-        following_me_data = []
+        follow_data = [[],[]]
         theUser = Profile.objects.filter(user_id__exact=self.request.user.id)
         theFollowers = theUser[0].follows.all()
-        follow_data.append(theFollowers)
-        following_me = theUser[0].followed_by.all()
-        following_me_data.append(following_me)
-        print(f'I follow: {follow_data}')
-        print(f'{following_me_data} follows me')
+        followers = theUser[0].followed_by.all()
+        follow_data[0].append(theFollowers)
+        follow_data[1].append(followers)
 
-        return theFollowers
+        print(f'I follow: {follow_data[0]}')
+        print(f'{follow_data[1]} follows me')
+
+        return follow_data
