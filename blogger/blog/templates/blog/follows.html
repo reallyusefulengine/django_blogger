@@ -1,11 +1,11 @@
 {% extends "blog/base.html" %}
 {% block content %}
-    <h1 class="mb-3">Followed users: ({{ page_obj.paginator.count }})</h1>
-    {% for post in posts|first %}
-    {% if post.0.user %}
+    <h1 class="mb-3">Followed users: ({{ user.profile.follows.count }})</h1>
+    {% for p in follow_data.0.0 %}
+    {% if p.user %}
     <article class="media content-section">
-        <img class="rounded-circle article-img" src="{{ post.0.user.profile.image.url }}" alt="">
-        <a href="{% url 'user-posts' post.0.user %}">{{ post.0.user }}</a>
+        <img class="rounded-circle article-img" src="{{ p.user.profile.image.url }}" alt="">
+        <a href="{% url 'user-posts' p.user %}">{{ p.user.profile.user }}</a>
     {% else %}
       <p>You are not following any users</p>
     {% endif %}
@@ -13,13 +13,13 @@
     </article>
     {% endfor %}
 
-    <h1 class="mb-3">Users following me:</h1>
+    <h1 class="mb-3">Users following me: ({{ user.profile.followed_by.count }})</h1>
 
-    {% for post in posts|last %}
-      {% if post.0.user %}
+    {% for p in follow_data.1.0 %}
+    {% if p.user %}
         <article class="media content-section">
-        <img class="rounded-circle article-img" src="{{ post.0.user.profile.image.url }}" alt="">
-        <a href="{% url 'user-posts' post.0.user %}">{{ post.0.user }}</a>
+        <img class="rounded-circle article-img" src="{{ p.user.profile.image.url }}" alt="">
+        <a href="{% url 'user-posts' p.user %}">{{ p.user }}</a>
       {% else %}
         <p>no users are folowing you</p>
       {% endif %}
