@@ -2,15 +2,6 @@
 {% load crispy_forms_tags %}
 {% block content %}
     <h1 class="mb-3">Posts by {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h1>
-    <form method="post">
-      {% csrf_token %}
-      {{ follow_form|crispy }}
-      <p>{{ is_following }}</p>
-<p>{{ user.profile.follows.all }}</p>
-      <a class="btn btn-info mb-4" class="btn btn-outline-info" href="{% url "follow" view.kwargs.username %}">
-          {% if is_following %} Unfollow {% else %} Follow {% endif %}</a>
-
-    </form>
     {% for post in posts %}
     <article class="media content-section">
       <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}" alt="">
@@ -18,6 +9,11 @@
         <div class="article-metadata">
           <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
           <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+          {% if is_following %}
+            <a class="btn btn-info btn-sm mt-0" class="btn btn-outline-info" href="{% url "follow" view.kwargs.username %}">Following</a>
+                 {% else %}
+                 <a class="btn btn-warning btn-sm mt-0" class="btn btn-outline-info" href="{% url "follow" view.kwargs.username %}">Follow</a>
+                 {% endif %}
         </div>
         <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
         <p class="article-content">{{ post.content }}</p>

@@ -35,6 +35,11 @@ class UserPostListView(ListView):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         return Post.objects.filter(author=user).order_by('-date_posted')
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['is_following'] = Profile.objects.is_following(self.kwargs.get('username'), self.request.user)
+        return context
+
 class PostDetailView(DetailView):
     model = Post
 
@@ -99,9 +104,13 @@ class FollowsListView(LoginRequiredMixin, ListView):
 
 
 class UserFollowView(View):
-    # def get_queryset(self):
-    #     is_following = Profile.objects.is_following(self.kwargs.get('username'), self.request.user)
-    #     return is_following
+    model = Profile
+    context_object_name = 'following'
+
+    def get_queryset(self):
+        is_following = Profile.objects.is_following(self.kwargs.get('username'), self.request.user)
+        print(is_following)
+        return is_following
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
