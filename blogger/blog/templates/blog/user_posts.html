@@ -5,9 +5,10 @@
     <form method="post">
       {% csrf_token %}
       {{ follow_form|crispy }}
+      <p>{{ is_following }}</p>
 <p>{{ user.profile.follows.all }}</p>
       <a class="btn btn-info mb-4" class="btn btn-outline-info" href="{% url "follow" view.kwargs.username %}">
-          {% if view.kwargs.username in user.profile.follows.all.0 %} Unfollow {% else %} Followdgssf {% endif %}</a>
+          {% if is_following %} Unfollow {% else %} Follow {% endif %}</a>
 
     </form>
     {% for post in posts %}

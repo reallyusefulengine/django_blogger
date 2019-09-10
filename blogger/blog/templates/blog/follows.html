@@ -1,11 +1,13 @@
 {% extends "blog/base.html" %}
 {% block content %}
     <h1 class="mb-3">Followed users: ({{ user.profile.follows.count }})</h1>
-    {% for p in follow_data.0.0 %}
-    {% if p.user %}
+
+    <p>{{ follow_data }}</p>
+    {% for obj in object_list %}
+    {% if obj.user %}
     <article class="media content-section">
-        <img class="rounded-circle article-img" src="{{ p.user.profile.image.url }}" alt="">
-        <a href="{% url 'user-posts' p.user %}">{{ p.user.profile.user }}</a>
+        <img class="rounded-circle article-img" src="{{ obj.user.profile.image.url }}" alt="">
+        <a href="{% url 'user-posts' obj.user %}">{{ obj.user.profile.user }}</a>
     {% else %}
       <p>You are not following any users</p>
     {% endif %}
@@ -15,11 +17,11 @@
 
     <h1 class="mb-3">Users following me: ({{ user.profile.followed_by.count }})</h1>
 
-    {% for p in follow_data.1.0 %}
-    {% if p.user %}
+    {% for obj in following_me %}
+    {% if obj.user %}
         <article class="media content-section">
-        <img class="rounded-circle article-img" src="{{ p.user.profile.image.url }}" alt="">
-        <a href="{% url 'user-posts' p.user %}">{{ p.user }}</a>
+        <img class="rounded-circle article-img" src="{{ obj.user.profile.image.url }}" alt="">
+        <a href="{% url 'user-posts' obj.user %}">{{ obj.user }}</a>
       {% else %}
         <p>no users are folowing you</p>
       {% endif %}

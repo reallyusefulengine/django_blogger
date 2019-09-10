@@ -8,6 +8,8 @@ UpdateView, DeleteView)
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from users.models import Profile
+from users.managers import ProfileManager
+
 
 # def home(request):
 #     context = {
@@ -79,81 +81,45 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
         form.instance.post_id = self.kwargs['pk']
         return super().form_valid(form)
 
-# class Follow(LoginRequiredMixin, CreateView):
-#     model = Post
-#     context_object_name = 'posts'
-#     who_is_following_who = [[],[]]
-#
-#
-#     def follow(self):
-#         theUser = Profile.objects.filter(user_id__exact=self.request.user.id)
-#         add_to_following = who_is_following_who[0].append(post.author.username)
-#         print(who_is_following_who)
-#
-#
-#     def post(self, request, *args, **kwargs):
-#         # form.instance.author = self.request.user
-#         # form = self.form_class(request.POST)
-#         # form.follow()
-#         # if form.is_valid():
-#         #     return super().form_valid(form)
-#         # return render(request, self.blog_home, {'form': form})
-#         if request.method=='POST':
-#             follow_form = FollowForm(request.POST, instance=request.user)
-#             if follow_form.is_valid():
-#                 self.follow(request)
-#                 follow_form.save()
-#                 messages.success(request, f'Now following the user')
-#                 return redirect('profile')
-#         else:
-#             follow_form = FollowForm(instance=request.user)
-#
-#         context= {
-#             'follow_form': follow_form,
-#         }
-#
-#         return render(request, 'users/profile.html', context)
-#
-#     def get_queryset(self):
-#         theUser = Profile.objects.filter(user_id__exact=self.request.user.id)
-#         i_follow = theUser[0].follows.all()
-#         following_me = theUser[0].followed_by.all()
-#         who_is_following_who[0].append(i_follow)
-#         who_is_following_who[1].append(following_me)
-#
-#         return who_is_following_who
 
 class FollowsListView(LoginRequiredMixin, ListView):
     # Follow.follow_data = [[],[]]
     model = Profile
     template_name = 'blog/follows.html' # <app>/<model>_<viewtype>.html
-    context_object_name = 'follow_data'
-    paginate_by = 6
-    #
+
     def get_queryset(self):
-        follow_data = [[],[]]
-        theUser = Profile.objects.filter(user_id__exact=self.request.user.id)
-        theFollowers = theUser[0].follows.all()
-        followers = theUser[0].followed_by.all()
-        follow_data[0].append(theFollowers)
-        follow_data[1].append(followers)
-
-        print(f'I follow: {follow_data[0]}')
-        print(f'{follow_data[1]} follows me')
-
+        follow_data = Profile.objects.get_users_follows(self.request.user)
         return follow_data
 
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['following_me'] = Profile.objects.get_users_following_me(self.request.user)
+        return context
+
+
 class UserFollowView(View):
+    # def get_queryset(self):
+    #     is_following = Profile.objects.is_following(self.kwargs.get('username'), self.request.user)
+    #     return is_following
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['is_following'] = Profile.objects.is_following(self.kwargs.get('username'), self.request.user)
+        return context
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context["is_following"] = context.pop("object_list")
+    #     return context
+
     def get(self, request, username, *args, **kwargs):
         toggle_user = get_object_or_404(Profile, user__username=username)
         if request.user.is_authenticated:
             user_profile, created = Profile.objects.get_or_create(user=request.user)
-            print(f'user profile is: {user_profile}')
-            print(f'toggle user: {toggle_user}')
             if toggle_user in user_profile.follows.all():
                 user_profile.follows.remove(toggle_user)
             else:
-                print(user_profile)
                 user_profile.follows.add(toggle_user)
 
         return redirect("user-posts", username=username)
